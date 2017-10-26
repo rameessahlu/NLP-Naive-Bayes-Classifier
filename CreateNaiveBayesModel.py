@@ -2,6 +2,9 @@ import json
 import CreateVocabulary
 import re
 from collections import Counter
+import joblib
+
+ModelPath = '.\\output\\NaiveBayesModel.pickle'
 
 class NaiveBayesModel(object):
     TrainDataPath = '.\\data\\train data without stop words.json'
@@ -71,6 +74,11 @@ class NaiveBayesModel(object):
             json.dump(self.LikelihoodDict, outfile, sort_keys=True, indent=4)
         print('Table creation successful!')
             
+        self.LikelihoodDict['PositiveClassProbability'] = self.PositiveClassProbability
+        self.LikelihoodDict['NegativeClassProbability'] = self.NegativeClassProbability
+        return self.LikelihoodDict
+        
 if __name__ == '__main__':
     NBM = NaiveBayesModel()
-    NBM.generateProbabilityTable()
+    LikelihoodDict = NBM.generateProbabilityTable()
+    joblib.dump(LikelihoodDict, ModelPath, compress=9)
