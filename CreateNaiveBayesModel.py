@@ -1,3 +1,4 @@
+#!\Python35\python.exe
 import json
 import CreateVocabulary
 import re
@@ -76,6 +77,9 @@ class NaiveBayesModel(object):
             
         self.LikelihoodDict['PositiveClassProbability'] = self.PositiveClassProbability
         self.LikelihoodDict['NegativeClassProbability'] = self.NegativeClassProbability
+        self.LikelihoodDict['TotalPositiveWordCount'] = TotalWordCounts['PositiveWordCount']
+        self.LikelihoodDict['TotalNegativeWordCount'] = TotalWordCounts['NegativeWordCount']
+        self.LikelihoodDict['VocabularySize'] = VocabularySize
         return self.LikelihoodDict
         
 if __name__ == '__main__':
