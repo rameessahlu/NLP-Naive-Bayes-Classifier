@@ -4,8 +4,8 @@ import json
 import re
 import os
 
-train_data_path = ".\\data\\train data without stop words.json"
-vocabulary_path = ".\\output\\vocabulary.json"
+train_data_path = os.path.join('data', 'train data without stop words.json')
+vocabulary_path = os.path.join('output', 'vocabulary.json')
 
 
 def GenerateVocabularyData():
@@ -26,7 +26,7 @@ def GenerateVocabularyData():
             temp_bigram_set = set()
             for bigram in bigrams:
                 temp_bigram_set.add(bigram)
-            bigram_set = bigram_set | temp_bigram_set
+            bigram_set = bigram_set | temp_bigram_set #to append sets
             unigrams = [u for u in re.split('\s+',value)]
             for unigram in unigrams:
                 unigram_set.add(unigram)

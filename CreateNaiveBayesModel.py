@@ -4,13 +4,14 @@ import CreateVocabulary
 import re
 from collections import Counter
 import joblib
+import os
 
-ModelPath = '.\\output\\NaiveBayesModel.pickle'
+ModelPath = os.path.join('output', 'NaiveBayesModel.pickle')
 
 class NaiveBayesModel(object):
-    TrainDataPath = '.\\data\\train data without stop words.json'
-    VocabularyJsonDataPath = '.\\output\\vocabulary.json'
-    LikelihoodDebugJsonTable = '.\\output\\likelihood_debug_json.json'
+    TrainDataPath = os.path.join('data', 'train data without stop words.json')
+    VocabularyJsonDataPath = os.path.join('output', 'vocabulary.json')
+    LikelihoodDebugJsonTable = os.path.join('output', 'likelihood_debug_json.json')
 
     LikelihoodDict = {}
     PositiveClassProbability = 0
@@ -62,6 +63,7 @@ class NaiveBayesModel(object):
                     if set(TempBigram) == set((Word[0],Word[1])):
                         TempCount  = TempCount + 1
                 NegativeFrequencyCount = TempCount + NegativeFrequencyCount
+            #probability of a word in a specific class  for creating likelihood table
             PositiveProbability = self.calculateProbability(PositiveFrequencyCount, TotalWordCounts['PositiveWordCount'], VocabularySize)
             NegativeProbability = self.calculateProbability(NegativeFrequencyCount, TotalWordCounts['NegativeWordCount'], VocabularySize)
             BigramLikelihoodDict[Word[0] + ',' + Word[1]] = [PositiveProbability , NegativeProbability]
@@ -69,17 +71,18 @@ class NaiveBayesModel(object):
         self.LikelihoodDict['bigram'] = BigramLikelihoodDict
         self.PositiveClassProbability = float(TotalWordCounts['PositiveWordCount'])/float(TotalWordCounts['PositiveWordCount']+TotalWordCounts['NegativeWordCount'])
         self.NegativeClassProbability = float(TotalWordCounts['NegativeWordCount'])/float(TotalWordCounts['PositiveWordCount']+TotalWordCounts['NegativeWordCount'])
-        
-        #DEBUG
-        with open(self.LikelihoodDebugJsonTable, 'w') as outfile:
-            json.dump(self.LikelihoodDict, outfile, sort_keys=True, indent=4)
-        print('Table creation successful!')
             
         self.LikelihoodDict['PositiveClassProbability'] = self.PositiveClassProbability
         self.LikelihoodDict['NegativeClassProbability'] = self.NegativeClassProbability
         self.LikelihoodDict['TotalPositiveWordCount'] = TotalWordCounts['PositiveWordCount']
         self.LikelihoodDict['TotalNegativeWordCount'] = TotalWordCounts['NegativeWordCount']
         self.LikelihoodDict['VocabularySize'] = VocabularySize
+
+        #DEBUG
+        with open(self.LikelihoodDebugJsonTable, 'w') as outfile:
+            json.dump(self.LikelihoodDict, outfile, sort_keys=True, indent=4)
+        print('Table creation successful!')
+
         return self.LikelihoodDict
         
 if __name__ == '__main__':
