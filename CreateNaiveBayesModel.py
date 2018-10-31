@@ -6,23 +6,30 @@ from collections import Counter
 import joblib
 import os
 
-ModelPath = os.path.join('output', 'NaiveBayesModel.pickle')
-
 class NaiveBayesModel(object):
+    stemming = False
     TrainDataPath = os.path.join('data', 'train data without stop words.json')
     VocabularyJsonDataPath = os.path.join('output', 'vocabulary.json')
     LikelihoodDebugJsonTable = os.path.join('output', 'likelihood_debug_json.json')
+    file_name_suffix = 'WithoutStemming'
+    model_name = 'NaiveBayesModel'+ file_name_suffix +'.pickle'
+    ModelPath = os.path.join('output', model_name)
 
     LikelihoodDict = {}
     PositiveClassProbability = 0
     NegativeClassProbability = 0
+    
+    def __init__(self, stemming):
+        self.stemming = stemming
+        if stemming == True:
+            file_name_suffix = 'WithStemming'
     
     def calculateProbability(self, WordFrequency, TotalWordCount, VocabularySize):
         return float(WordFrequency+1)/float(TotalWordCount+VocabularySize)
 
     def generateProbabilityTable(self):
         print('Generating vocuabulary data(both unigram and bigram)...')
-        TotalWordCounts = CreateVocabulary.GenerateVocabularyData()
+        TotalWordCounts = CreateVocabulary.GenerateVocabularyData(self.stemming)
         print('Vocabulary geneartion successful!')
 
         print('Generating frequency and likelihood table...')
@@ -86,6 +93,12 @@ class NaiveBayesModel(object):
         return self.LikelihoodDict
         
 if __name__ == '__main__':
-    NBM = NaiveBayesModel()
+    print('Please enter 1 for model with stemming and 2 for model without stemming:')
+    choice = input()
+    if choice == 1:
+        choice = True
+    else:
+        choice = False
+    NBM = NaiveBayesModel(choice)
     LikelihoodDict = NBM.generateProbabilityTable()
     joblib.dump(LikelihoodDict, ModelPath, compress=9)
