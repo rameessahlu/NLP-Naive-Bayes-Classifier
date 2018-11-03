@@ -26,10 +26,10 @@ def readBigFile(dataset_tpe, file_name, start_index):
 	with open(dataset_path, encoding="utf8") as f:
 		for line in f:
 			if ds_count >= start_index:
-				if (len(datasets['positive']) + len(datasets['negative'])) < 2000:
-					if ("__label__2" in line) and (len(datasets['positive']) <1000):
+				if (len(datasets['positive']) + len(datasets['negative'])) < 1000:
+					if ("__label__2" in line) and (len(datasets['positive']) <500):
 						datasets["positive"] = datasets["positive"] + [removeStopWords(line[11:])]
-					elif ("__label__1" in line) and (len(datasets['negative']) <1000):
+					elif ("__label__1" in line) and (len(datasets['negative']) <500):
 						#ngt_file.write(line[11:] + "\r\n")
 						#ngt_wsw_file.write(removeStopWords(line[11:]) + "\r\n")
 						datasets["negative"] = datasets["negative"] + [removeStopWords(line[11:])]
@@ -51,4 +51,4 @@ if __name__ == "__main__":
         file_name = os.path.join('data', 'train data without stop words.json')
     else:
         file_name = os.path.join('data', 'test data without stop words.json')
-    readBigFile(choice, file_name, 5000)
+    readBigFile(choice, file_name, 600)

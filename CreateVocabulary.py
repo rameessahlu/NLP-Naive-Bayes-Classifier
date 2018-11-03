@@ -4,18 +4,11 @@ import json
 import re
 import os
 from nltk.stem import PorterStemmer
+import PreProcessing as pp
 
-train_data_path = os.path.join('data', 'train data without stop words.json')
-vocabulary_path = os.path.join('output', 'vocabulary.json')
 ps = PorterStemmer()
 
-def perform_stemming(tds):
-	stemmed_td = []
-	for td in tds:
-		stemmed_td.append(ps.stem(td))
-	return stemmed_td
-
-def GenerateVocabularyData(stemming):
+def GenerateVocabularyData(stemming, vocabulary_path, train_data_path):
 	with open(train_data_path) as tdf:
 		train_data = json.load(tdf)
 	
@@ -29,12 +22,13 @@ def GenerateVocabularyData(stemming):
 	
 	for key in train_data:
 		for value in train_data.get(key):
+			pp_value = pp.StopWordAndSpecialCharRemoval(value, stemming)
 			if stemming == True:
-				bigrams = [b for b in zip(perform_stemming(re.split('\s+',value)[:-1]), perform_stemming((re.split('\s+',value)[1:])))]
-				unigrams = [ps.stem(word) for word in value]
+				bigrams = [b for b in zip(pp.perform_stemming(re.split('\s+',pp_value)[:-1]), pp.perform_stemming((re.split('\s+',pp_value)[1:])))]
+				unigrams = [ps.stem(word) for word in pp_value]
 			else:
-				bigrams = [b for b in zip(re.split('\s+',value)[:-1], re.split('\s+',value)[1:])]
-				unigrams = [u for u in re.split('\s+',value)]
+				bigrams = [b for b in zip(re.split('\s+',pp_value)[:-1], re.split('\s+',pp_value)[1:])]
+				unigrams = [u for u in re.split('\s+',pp_value)]
 			
 			temp_bigram_set = set()
 			for bigram in bigrams:
