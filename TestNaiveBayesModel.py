@@ -98,23 +98,35 @@ if __name__ == '__main__':
         failure_prediction = 0
         cont_dist = {}
         temp_p_count = 0
-        count = 1
+        
+        html_header = r'<head><link rel="stylesheet" href="style.css"></head><table><thead><tr><th scope="col" >id</th><th scope="col">dataset</th><th scope="col">dataset type </th><th scope="col">Prediction</th></tr></thead><tbody>'
+        html_footer = r'</tbody><tfoot><tr class="text-offset"><td colspan="3">Total Failure Prediction</td><td>{}</td></tr><tr class="text-offset"><td colspan="3">Total Successful Prediction</td><td>{}</td></tr><tr><td colspan="3">Total</td><td>{}</td></tr></tfoot></table>'
+        td_head = r'<td class="row">'
+        td_close = r'</td>'
+        count = 0
         with open(test_data_path) as tdf:
             test_data = json.load(tdf)
         for key in test_data:
             for value in test_data.get(key):
+                count = count+1
+                html_header = html_header + r'<tr>'+ td_head + str(count) + td_close + td_head + value + td_close + td_head + key + td_close 
                 if count % 500 == 0:
-                    cont_dist[count] = (temp_p_count / 500)
+                    cont_dist[str(count-500)+r'-'+str(count)] = (temp_p_count / 500) * 100
                     temp_p_count = 0
                 pp_value = pp.StopWordAndSpecialCharRemoval(value, stemming)
                 result = TNBM.main(pp_value, stemming)
-                #print(key + ' ' + result)
                 if key == result:
                     successful_prediction = successful_prediction + 1
                     temp_p_count = temp_p_count + 1
+                    html_header = html_header + td_head + "success" + td_close 
                 else:
                     failure_prediction = failure_prediction + 1
-                count = count + 1
+                    html_header = html_header + td_head + "failure" + td_close 
+                html_header = html_header + r'</tr>'
+        html_header = html_header + html_footer.format(successful_prediction, failure_prediction, count)
+        f= open(r"output\result.html","w+")
+        f.write(html_header)
         print(r':) ' + str(successful_prediction))
         print(r':( ' + str(failure_prediction))
         print(cont_dist)
+        print(count)
